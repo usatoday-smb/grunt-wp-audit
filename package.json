@@ -31,8 +31,5 @@
 	},
 	"scripts": {
 		"install": "./install.sh"
-	},
-	"config": {
-		"phpcs_version": "2.5.0"
 	}
 }
