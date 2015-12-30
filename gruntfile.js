@@ -16,7 +16,7 @@
 		},
 		'wp-js': {
 			target: {
-				src: 'gruntfile.js'
+				src: 'fixtures/*.js'
 			}
 		}
  	});

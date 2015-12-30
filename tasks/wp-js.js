@@ -35,12 +35,17 @@ module.exports = grunt => {
 				return done();
 			}
 
-			const jshint = require( 'jshint' ).JSHINT;
+			const jshint   = require( 'jshint' ).JSHINT;
+			const settings = this.options({ config: {} });
+			const options  = Object.assign(
+				require( '../presets/jshint.json' ), // Copied from WP trunk.
+				settings.options
+			);
 
 			this.filesSrc.map( file => {
 				formatter.file( file, grunt );
 				let js = grunt.file.read( file );
-				jshint( js );
+				jshint( js, options, options.globals );
 				reporter( jshint.errors );
 			});
 			done();
