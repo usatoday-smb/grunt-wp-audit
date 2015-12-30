@@ -13,6 +13,11 @@
 			target: {
 				src: 'fixtures/*.css'
 			}
+		},
+		'wp-js': {
+			target: {
+				src: 'gruntfile.js'
+			}
 		}
  	});
 

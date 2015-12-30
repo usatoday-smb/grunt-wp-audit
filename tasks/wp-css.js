@@ -5,9 +5,7 @@
 
 module.exports = grunt => {
 
-	const pluralize = ( word, count ) => {
-		return 1 === count ? word : word + 's';
-	};
+	const formatter = require( '../lib/formatter' );
 
 	grunt.registerMultiTask(
 		'wp-css',
@@ -24,37 +22,33 @@ module.exports = grunt => {
 				config: {}
 			});
 
-			const formatter = results => {
-				var frmtr = require( 'postcss-reporter/lib/formatter' )({
-					noPlugin: true
-				});
-
-				return results.reduce( ( output, result ) => {
-					output += frmtr({
-						messages: result.warnings,
-						source:   result.source
-					});
-					return output;
-				}, '' );
-			};
-
 			let stylelint = require( 'stylelint' );
+
+			const fileCount = this.filesSrc.length;
 
 			stylelint.lint({
 				files: this.filesSrc,
 				config: require( 'stylelint-config-wordpress' ),
-				configOverrides: options.config,
-				formatter: formatter
+				configOverrides: options.config
 			}).then( data => {
 
-				let count = data.results.length;
+				data.results.forEach( result => {
+					formatter.file( result.source, grunt );
 
-				if ( ! data.output ) {
-					grunt.log.ok( count + ' ' + pluralize( 'file', count ) + ' checked.' );
-				} else {
-					grunt.log.writeln( data.output );
-					grunt.log.errorlns( count + ' ' + pluralize( 'error', count ) + ' found.' );
-				}
+					if ( result.errored ) {
+						result.warnings.forEach( error => {
+							formatter({
+								line: error.line,
+								char: error.column,
+								text: error.text
+							}, grunt );
+						});
+					}
+					formatter.total( result.warnings, grunt );
+				});
+
+				let files = grunt.util.pluralize( fileCount, 'file/files' );
+				grunt.log.ok( fileCount + ' ' + files + ' checked.' );
 
 				done();
 			});
