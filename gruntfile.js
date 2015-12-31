@@ -23,6 +23,11 @@
 			target: {
 				src: 'fixtures/*.js'
 			}
+		},
+		'wp-php': {
+			target: {
+				src: 'fixtures/*.php'
+			}
 		}
  	});
 

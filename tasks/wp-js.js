@@ -10,10 +10,6 @@ module.exports = grunt => {
 
 	const reporter = ( results ) => {
 
-		if ( 0 === results.length ) {
-			return grunt.log.ok();
-		}
-
 		results.forEach( error => {
 			formatter({
 				line: error.line,
