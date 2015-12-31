@@ -15,6 +15,11 @@
 			}
 		},
 		'wp-js': {
+			options: {
+				jshint: {
+					devel: true
+				},
+			},
 			target: {
 				src: 'fixtures/*.js'
 			}
