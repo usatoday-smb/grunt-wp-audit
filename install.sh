@@ -9,8 +9,6 @@ else
 	echo 'PHP installed.'
 fi
 
-DRY_RUN="$npm_config_dry_run"
-
 echo 'Making php directory.'
 if [ -z "$DRY_RUN" ]; then
 	mkdir php
@@ -34,7 +32,7 @@ fi
 
 echo 'Configuring PHPCS to use the WP standard.'
 if [ -z "$DRY_RUN" ]; then
-	php php/phpcs --config-set installed_paths php/wpcs
+	php php/phpcs --config-set installed_paths ${pwd}/php/wpcs
 fi
 
 echo 'Done!'
