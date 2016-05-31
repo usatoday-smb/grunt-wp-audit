@@ -14,7 +14,7 @@ module.exports = grunt => {
 			const done = this.async();
 
 			// Exit if we're not ready.
-			if ( ! this.files.length ) {
+			if ( ! this.filesSrc.length ) {
 				grunt.log.error( 'No files provided!' );
 				return done();
 			}
@@ -43,14 +43,18 @@ module.exports = grunt => {
 				process.cwd(),
 				path.resolve( __dirname, '../php/phpcs' )
 			);
+			let args = [];
 			let standard = settings.phpcs.standard;
-			command += ` --standard=${ standard ? standard : 'WordPress' }`;
 
-			command += ' --report=json';
+			args.push( `--standard=${ standard ? standard : 'WordPress' }` );
+			args.push( '--report=json' );
+			args.push( this.filesSrc.join( ' ' ) );
 
-			command += ` ${ this.filesSrc.join( ' ' ) }`;
+			command += ' ' + args.join( ' ' );
 
-			exec( command, ( error, stdout, stderr ) => {
+			grunt.log.debug( 'Command: ' + command );
+
+			let proc = exec( command, { maxBuffer: 200 * 1024 }, ( error, stdout, stderr ) => {
 
 				let output = JSON.parse( stdout );
 
@@ -81,6 +85,8 @@ module.exports = grunt => {
 				// We're done here!
 				done();
 			});
+
+			grunt.log.debug( 'Process: ' + proc.pid );
 		}
 	);
 };
