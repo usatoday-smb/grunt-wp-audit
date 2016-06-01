@@ -56,7 +56,11 @@ module.exports = grunt => {
 
 			exec( command, { maxBuffer: 200 * 1024 }, ( error, stdout, stderr ) => {
 
-				let output = JSON.parse( stdout );
+				try {
+					let output = JSON.parse( stdout );
+				} catch( err ) {
+					return grunt.fail.warn( stdout );
+				}
 
 				if ( output.files ) {
 					for ( let key in output.files ) {
