@@ -54,7 +54,7 @@ module.exports = grunt => {
 
 			grunt.log.debug( 'Command: ' + command );
 
-			let proc = exec( command, { maxBuffer: 200 * 1024 }, ( error, stdout, stderr ) => {
+			exec( command, { maxBuffer: 200 * 1024 }, ( error, stdout, stderr ) => {
 
 				let output = JSON.parse( stdout );
 
@@ -85,8 +85,6 @@ module.exports = grunt => {
 				// We're done here!
 				done();
 			});
-
-			grunt.log.debug( 'Process: ' + proc.pid );
 		}
 	);
 };

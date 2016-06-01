@@ -10,9 +10,7 @@
  module.exports = grunt => {
  	grunt.initConfig({
  		'wp-css': {
-			target: {
-				src: 'fixtures/*.css'
-			}
+			src: 'fixtures/*.css'
 		},
 		'wp-js': {
 			options: {
@@ -20,14 +18,10 @@
 					devel: true
 				},
 			},
-			target: {
-				src: 'fixtures/*.js'
-			}
+			src: 'fixtures/*.js'
 		},
 		'wp-php': {
-			target: {
-				src: 'fixtures/*.php'
-			}
+			src: 'fixtures/*.php'
 		}
  	});
 

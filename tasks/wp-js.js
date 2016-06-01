@@ -7,19 +7,7 @@ module.exports = grunt => {
 
 	const formatter = require( '../lib/formatter' );
 	const path      = require( 'path' ).resolve;
-
-	const reporter = ( results ) => {
-
-		results.forEach( error => {
-			formatter({
-				line: error.line,
-				char: error.character,
-				text: error.reason
-			}, grunt );
-		});
-
-		formatter.total( results, grunt );
-	};
+	const JSCS      = require( 'jscs' );
 
 	grunt.registerMultiTask(
 		'wp-js',
@@ -50,24 +38,38 @@ module.exports = grunt => {
 					options,
 					options.globals
 				);
-				reporter( jshint.errors );
+				jshint.errors.forEach( error => {
+					if ( ! error ) {
+						return;
+					}
+					formatter({
+						line: error.line,
+						char: error.character,
+						text: error.reason
+					}, grunt );
+				});
+				formatter.total( jshint.errors, grunt );
 			});
 
 			// Runs JSCS.
-			const configKey = Date.now();
-			grunt.config.merge({
-				jscs: {
-					[ configKey ] : {
-						src: this.filesSrc,
-						options: Object.assign(
-							settings.jscs,
-							{ config: path( __dirname, '../presets/jscs.json' ) }
-						)
-					}
-				}
+			let checker = new JSCS();
+			checker.registerDefaultRules();
+			checker.configure({ preset: 'wordpress' });
+
+			this.filesSrc.forEach( file => {
+				formatter.file( file, grunt );
+				let code = grunt.file.read( file );
+				let errors = checker.checkString( code );
+
+				errors.getErrorList().forEach( error => {
+					formatter({
+						line: error.line,
+						char: error.column + 1,
+						text: error.message
+					}, grunt );
+				});
+				formatter.total( errors.getErrorList(), grunt );
 			});
-			grunt.loadNpmTasks( 'grunt-jscs' );
-			grunt.task.run( 'jscs:' + configKey );
 
 			// We're done here!
 			done();
