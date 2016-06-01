@@ -8,6 +8,8 @@ module.exports = grunt => {
 	const formatter = require( '../lib/formatter' );
 	const path      = require( 'path' ).resolve;
 	const JSCS      = require( 'jscs' );
+	const Promise   = require( 'bluebird' );
+	const readAsync = Promise.promisify( require( 'fs' ).readFile );
 
 	grunt.registerMultiTask(
 		'wp-js',
@@ -56,24 +58,30 @@ module.exports = grunt => {
 			checker.registerDefaultRules();
 			checker.configure({ preset: 'wordpress' });
 
-			this.filesSrc.forEach( file => {
-				formatter.file( file, grunt );
-				let code = grunt.file.read( file );
-				let errors = checker.checkString( code );
+			let promises = [];
 
-				errors.getErrorList().forEach( error => {
-					formatter({
-						line: error.line,
-						char: error.column + 1,
-						text: error.message
-					}, grunt );
+			this.filesSrc.forEach( file => {
+				let promise = readAsync( file, 'utf-8' );
+
+				promise.then( code => {
+					formatter.file( file, grunt );
+
+					let errors = checker.checkString( code );
+					errors.getErrorList().forEach( error => {
+						formatter({
+							line: error.line,
+							char: error.column + 1,
+							text: error.message
+						}, grunt );
+					});
+					formatter.total( errors.getErrorList(), grunt );
 				});
-				formatter.total( errors.getErrorList(), grunt );
+
+				promises.push( promise );
 			});
 
-			// We're done here!
-			done();
-
+			// Exit once everything is done.
+			Promise.all( promises, () => done() );
 		}
 	);
 };
