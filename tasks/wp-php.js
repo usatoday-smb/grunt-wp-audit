@@ -39,18 +39,18 @@ module.exports = grunt => {
 			const exec = require( 'child_process' ).exec;
 			const path = require( 'path' );
 
-			let command = path.relative(
-				process.cwd(),
-				path.resolve( __dirname, '../php/phpcs' )
-			);
-			let args = [];
+			let command = [];
 			let standard = settings.phpcs.standard;
 
-			args.push( `--standard=${ standard ? standard : 'WordPress' }` );
-			args.push( '--report=json' );
-			args.push( this.filesSrc.join( ' ' ) );
+			command.push( 'echo "" |' ); // Provide a STDIN, so PHPCS doesn't hang as of 2.6.1.
+			command.push( path.relative(
+				process.cwd(),
+				path.resolve( __dirname, '../php/phpcs' )
+			) );
 
-			command += ' ' + args.join( ' ' );
+			command.push( `--standard=${ standard ? standard : 'WordPress' }` );
+			command.push( '--report=json' );
+			command = command.concat( this.filesSrc ).join( ' ' );
 
 			grunt.log.debug( 'Command: ' + command );
 
