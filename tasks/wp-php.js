@@ -83,9 +83,17 @@ module.exports = grunt => {
 				.then( stdout => {
 					let output = JSON.parse( stdout );
 					return output.files;
+				})
+				.catch( err => {
+					if ( err.cmd ) {
+						grunt.log.error( 'Failed command:' );
+						grunt.log.writeln( err.cmd );
+					}
+					throw err;
 				});
 			}, { concurrency: settings.phpcs.maxProcesses } )
 			.each( output => {
+				grunt.verbose.ok( 'Processed PHPCS successfully.' );
 				for ( let key in output ) {
 					formatter.file( path.relative( process.cwd(), key ) );
 
