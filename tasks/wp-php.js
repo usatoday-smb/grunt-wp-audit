@@ -23,15 +23,20 @@ module.exports = grunt => {
 			}
 
 			// Set the options.
-			const settings  = this.options({
+			const settings  = {
 				phplint: {},
 				phpcs: {
 					maxFiles: 20,
 					maxProcesses: 10,
 					maxBuffer: 200 * 1024
 				}
-			});
+			};
 			const configKey = Date.now();
+
+			let opts = this.options();
+			for ( let key in opts ) {
+				Object.assign( settings[ key ], opts[ key ] );
+			}
 
 			// Runs PHPLint.
 			grunt.config.merge({
