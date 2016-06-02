@@ -56,18 +56,16 @@ module.exports = grunt => {
 
 			exec( command, { maxBuffer: 200 * 1024 }, ( error, stdout, stderr ) => {
 
+				let output;
 				try {
-					let output = JSON.parse( stdout );
+					output = JSON.parse( stdout );
 				} catch( err ) {
 					return grunt.fail.warn( stdout );
 				}
 
 				if ( output.files ) {
 					for ( let key in output.files ) {
-						formatter.file(
-							path.relative( process.cwd(), key ),
-							grunt
-						);
+						formatter.file( path.relative( process.cwd(), key ) );
 
 						let val    = output.files[ key ],
 						    errors = val.messages;
@@ -78,15 +76,16 @@ module.exports = grunt => {
 									line: msg.line,
 									char: msg.column,
 									text: msg.message
-								}, grunt );
+								});
 							});
 						}
 
-						formatter.total( errors, grunt );
+						formatter.total( errors );
 					}
 				}
 
 				// We're done here!
+				formatter.checked( this.filesSrc );
 				done();
 			});
 		}

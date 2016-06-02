@@ -18,7 +18,7 @@
 					devel: true
 				},
 			},
-			src: '/Users/egregor/Dev/quickstart/www/wp-content/themes/vip/lawrence/**/*.js'
+			src: 'fixtures/*.js'
 		},
 		'wp-php': {
 			src: 'fixtures/*.php'

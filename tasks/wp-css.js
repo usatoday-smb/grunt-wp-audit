@@ -6,6 +6,7 @@
 module.exports = grunt => {
 
 	const formatter = require( '../lib/formatter' );
+	const Promise   = require( 'bluebird' );
 
 	grunt.registerMultiTask(
 		'wp-css',
@@ -23,33 +24,34 @@ module.exports = grunt => {
 			});
 
 			let stylelint = require( 'stylelint' );
+			let promises  = [];
 
-			const fileCount = this.filesSrc.length;
+			this.filesSrc.forEach( file => {
+				let promise = stylelint.lint({
+					files: file,
+					config: require( 'stylelint-config-wordpress' ),
+					configOverrides: options.config
+				}).then( data => {
+					data.results.forEach( result => {
+						formatter.file( result.source );
 
-			stylelint.lint({
-				files: this.filesSrc,
-				config: require( 'stylelint-config-wordpress' ),
-				configOverrides: options.config
-			}).then( data => {
-
-				data.results.forEach( result => {
-					formatter.file( result.source, grunt );
-
-					if ( result.errored ) {
-						result.warnings.forEach( error => {
-							formatter({
-								line: error.line,
-								char: error.column,
-								text: error.text
-							}, grunt );
-						});
-					}
-					formatter.total( result.warnings, grunt );
+						if ( result.errored ) {
+							result.warnings.forEach( error => {
+								formatter({
+									line: error.line,
+									char: error.column,
+									text: error.text
+								});
+							});
+						}
+						formatter.total( result.warnings );
+					});
 				});
+				promises.push( promise );
+			});
 
-				let files = grunt.util.pluralize( fileCount, 'file/files' );
-				grunt.log.ok( fileCount + ' ' + files + ' checked.' );
-
+			Promise.all( promises ).then( () => {
+				formatter.checked( this.filesSrc );
 				done();
 			});
 		}
