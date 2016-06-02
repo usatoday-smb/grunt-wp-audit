@@ -36,6 +36,8 @@ fi
 echo 'Configuring PHPCS to use the WP standard.'
 if [ -z "$DRY_RUN" ]; then
 	php php/phpcs --config-set installed_paths $DIR/wpcs
+	php php/phpcs --config-set ignore_errors_on_exit 1
+	php php/phpcs --config-set ignore_warnings_on_exit 1
 fi
 
 echo 'Done!'
