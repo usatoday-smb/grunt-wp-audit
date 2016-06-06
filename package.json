@@ -21,10 +21,10 @@
   "homepage": "https://github.com/usatoday-smb/grunt-wp-audit#readme",
   "dependencies": {
     "bluebird": "^3.4.0",
-    "grunt": "^0.4.5",
-    "grunt-phplint": "0.0.6",
-    "jscs": "^3.0.3",
-    "jshint": "^2.8.0",
+    "grunt": "^1.0.1",
+    "grunt-phplint": "^0.0.8",
+    "jscs": "^3.0.4",
+    "jshint": "^2.9.2",
     "stylelint": "^6.5.1",
     "stylelint-config-wordpress": "^7.1.1"
   }
