@@ -100,12 +100,11 @@ module.exports = grunt => {
 			.each( output => {
 				grunt.verbose.ok( 'Processed PHPCS successfully.' );
 				for ( let key in output ) {
-					formatter.file( path.relative( process.cwd(), key ) );
-
 					let val    = output[ key ],
 						errors = val.messages;
 
 					if ( errors.length ) {
+						formatter.file( path.relative( process.cwd(), key ) );
 						errors.forEach( msg => {
 							formatter({
 								line: msg.line,
@@ -113,9 +112,8 @@ module.exports = grunt => {
 								text: msg.message
 							});
 						});
+						formatter.total( errors );
 					}
-
-					formatter.total( errors );
 				}
 			})
 			.then( () => {

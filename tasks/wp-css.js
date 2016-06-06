@@ -33,9 +33,8 @@ module.exports = grunt => {
 					configOverrides: options.config
 				}).then( data => {
 					data.results.forEach( result => {
-						formatter.file( result.source );
-
 						if ( result.errored ) {
+							formatter.file( result.source );
 							result.warnings.forEach( error => {
 								formatter({
 									line: error.line,

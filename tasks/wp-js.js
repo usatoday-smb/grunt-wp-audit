@@ -44,10 +44,13 @@ module.exports = grunt => {
 				let promise = readAsync( file, 'utf-8' );
 
 				promise.then( code => {
-					formatter.file( file );
-
-					let count  = 0;
 					let errors = checker.checkString( code );
+					let count = errors.getErrorList().length;
+
+					if ( count ) {
+						formatter.file( file );
+					}
+
 					errors.getErrorList().forEach( error => {
 						formatter({
 							line: error.line,
@@ -55,13 +58,15 @@ module.exports = grunt => {
 							text: error.message
 						});
 					});
-					count += errors.getErrorList().length;
 
 					jshint(
 						grunt.file.read( file ),
 						options,
 						options.globals
 					);
+					if ( ! count && jshint.errors ) {
+						formatter.file( file );
+					}
 					jshint.errors.forEach( error => {
 						if ( ! error ) {
 							return;
@@ -74,7 +79,9 @@ module.exports = grunt => {
 					});
 					count += jshint.errors.length;
 
-					formatter.total( count );
+					if ( count ) {
+						formatter.total( count );
+					}
 				});
 
 				promises.push( promise );
