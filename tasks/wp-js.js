@@ -64,7 +64,7 @@ module.exports = grunt => {
 						options,
 						options.globals
 					);
-					if ( ! count && jshint.errors ) {
+					if ( ! count && jshint.errors.length ) {
 						formatter.file( file );
 					}
 					jshint.errors.forEach( error => {
