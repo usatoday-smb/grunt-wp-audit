@@ -106,10 +106,16 @@ module.exports = grunt => {
 					if ( errors.length ) {
 						formatter.file( path.relative( process.cwd(), key ) );
 						errors.forEach( msg => {
+							let message = msg.message;
+
+							if ( grunt.option( 'debug' ) ) {
+								message += ' (' + msg.source + ')';
+							}
+
 							formatter({
 								line: msg.line,
 								char: msg.column,
-								text: msg.message
+								text: message
 							});
 						});
 						formatter.total( errors );
