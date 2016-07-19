@@ -1,31 +1,33 @@
 {
-  "name": "grunt-wp-audit",
-  "version": "1.0.1",
-  "description": "Set of Grunt tasks for auditing WordPress code.",
-  "main": "index.js",
-  "scripts": {
-    "install": "./install.sh"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/usatoday-smb/grunt-wp-audit.git"
-  },
-  "keywords": [
-    "gruntplugin"
-  ],
-  "author": "Ephraim Gregor <egregor@usatoday.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/usatoday-smb/grunt-wp-audit/issues"
-  },
-  "homepage": "https://github.com/usatoday-smb/grunt-wp-audit#readme",
-  "dependencies": {
-    "bluebird": "^3.4.0",
-    "grunt": "^1.0.1",
-    "grunt-phplint": "^0.0.8",
-    "jscs": "^3.0.4",
-    "jshint": "^2.9.2",
-    "stylelint": "^6.5.1",
-    "stylelint-config-wordpress": "^7.1.1"
-  }
+	"name": "grunt-wp-audit",
+	"version": "1.0.1",
+	"description": "Set of Grunt tasks for auditing WordPress code.",
+	"main": "index.js",
+	"scripts": {
+		"install": "./install.sh"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/usatoday-smb/grunt-wp-audit.git"
+	},
+	"keywords": [
+		"gruntplugin"
+	],
+	"author": "Ephraim Gregor <egregor@usatoday.com>",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/usatoday-smb/grunt-wp-audit/issues"
+	},
+	"homepage": "https://github.com/usatoday-smb/grunt-wp-audit#readme",
+	"dependencies": {
+		"bluebird": "^3.4.0",
+		"jscs": "^3.0.4",
+		"jshint": "^2.9.2",
+		"stylelint": "^6.5.1",
+		"stylelint-config-wordpress": "^7.1.1"
+	},
+	"peerDependencies": {
+		"grunt": "^1.0.1",
+		"grunt-phplint": "^0.0.8"
+	}
 }
