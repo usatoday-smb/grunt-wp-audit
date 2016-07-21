@@ -7,8 +7,10 @@ module.exports = grunt => {
 
 	const formatter = require( '../lib/formatter' );
 	const Promise   = require( 'bluebird' );
-	const execAsync = Promise.promisify( require( 'child_process' ).exec );
+	const exec      = require( 'child_process' ).exec;
+	const execAsync = Promise.promisify( exec );
 	const path      = require( 'path' );
+	const _         = require( 'lodash' );
 
 	grunt.registerMultiTask(
 		'wp-php',
@@ -24,34 +26,66 @@ module.exports = grunt => {
 
 			// Set the options.
 			const settings  = {
+				maxFiles: 20,
+				maxProcesses: 10,
+				maxBuffer: 200 * 1024,
 				phplint: {},
-				phpcs: {
-					maxFiles: 20,
-					maxProcesses: 10,
-					maxBuffer: 200 * 1024
-				}
+				phpcs: {}
 			};
-			const configKey = Date.now();
 
 			let opts = this.options();
 			for ( let key in opts ) {
 				Object.assign( settings[ key ], opts[ key ] );
 			}
 
+			if ( settings.maxProcesses < 1 ) {
+				settings.maxProcesses = Infinity;
+			}
+
 			// Runs PHPLint.
-			grunt.config.merge({
-				phplint: {
-					[ configKey ] : {
-						src: this.filesSrc,
-						options: settings.phplint
+			let phplint = Promise.map( this.filesSrc, file => {
+				let cmd = `php -d display_errors=1 -l ${ file }`;
+				grunt.log.debug( 'Command: ' + cmd );
+
+				return new Promise( ( res, rej ) => {
+					let child = exec( cmd, { maxBuffer: settings.maxBuffer } );
+					child.addListener( 'error', rej );
+					child.stdout.addListener( 'data', res );
+				})
+				.then( stdout => {
+					if ( 'No syntax errors detected in' !== stdout.substr( 0, 28 ) ) {
+						return { file, error: stdout.match( /line (\d+)/ )[1] }
+					} else {
+						return { file, error: false };
 					}
-				}
+				})
+				.catch( err => {
+					if ( err.cmd ) {
+						grunt.log.error( 'Failed command:' );
+						grunt.log.writeln( err.cmd );
+					}
+					throw err;
+				});
+			}, { concurrency: settings.maxProcesses } )
+			.then( results => {
+				grunt.verbose.ok( 'Processed PHP lint successfully.' );
+
+				let files = {};
+				results.forEach( result => {
+					if ( ! result.error ) {
+						return;
+					}
+					files[ path.relative( process.cwd(), result.file ) ] = [{
+						line: Number.parseInt( result.error ),
+						char: 1,
+						text: 'Parse error.'
+					}];
+				});
+				return files;
 			});
-			grunt.loadNpmTasks( 'grunt-phplint' );
-			grunt.task.run( 'phplint:' + configKey );
 
 			// Runs PHPCS.
-			let command = [];
+			let command  = [];
 			let standard = settings.phpcs.standard;
 
 			// Set up the command.
@@ -67,8 +101,8 @@ module.exports = grunt => {
 			// Chunk up the files.
 			let fileArr = [];
 
-			if ( settings.phpcs.maxFiles > 1 ) {
-				let chunk = settings.phpcs.maxFiles;
+			if ( settings.maxFiles > 1 ) {
+				let chunk = settings.maxFiles;
 				for ( let i = 0; i < this.filesSrc.length; i += chunk ) {
 					fileArr.push( this.filesSrc.slice( i, i + chunk ) );
 				}
@@ -76,11 +110,7 @@ module.exports = grunt => {
 				fileArr = [ this.filesSrc ];
 			}
 
-			if ( settings.phpcs.maxProcesses < 1 ) {
-				settings.phpcs.maxProcesses = Infinity;
-			}
-
-			Promise.map( fileArr, files => {
+			let phpcs = Promise.map( fileArr, files => {
 				let cmd = command.concat( files ).join( ' ' );
 				grunt.log.debug( 'Command: ' + cmd );
 
@@ -96,34 +126,52 @@ module.exports = grunt => {
 					}
 					throw err;
 				});
-			}, { concurrency: settings.phpcs.maxProcesses } )
-			.each( output => {
+			}, { concurrency: settings.maxProcesses } )
+			.map( output => {
 				grunt.verbose.ok( 'Processed PHPCS successfully.' );
+				let files = {};
 				for ( let key in output ) {
 					let val    = output[ key ],
 						errors = val.messages;
 
-					if ( errors.length ) {
-						formatter.file( path.relative( process.cwd(), key ) );
-						errors.forEach( msg => {
-							let message = msg.message;
-
-							if ( grunt.option( 'debug' ) ) {
-								message += ' (' + msg.source + ')';
-							}
-
-							formatter({
-								line: msg.line,
-								char: msg.column,
-								text: message
-							});
-						});
-						formatter.total( errors );
+					if ( ! errors.length ) {
+						return;
 					}
+
+					let file = path.relative( process.cwd(), key );
+					errors = errors.map( msg => {
+						let message = msg.message;
+
+						if ( grunt.option( 'debug' ) ) {
+							message += ' (' + msg.source + ')';
+						}
+
+						return {
+							line: msg.line,
+							char: msg.column,
+							text: message
+						};
+					});
+					files[ path.relative( process.cwd(), key ) ] = errors;
 				}
+				return files;
 			})
-			.then( () => {
-				formatter.checked( this.filesSrc );
+			.then( output => _.merge.apply( _, output ) );
+
+			Promise.join(
+				phplint, phpcs,
+				( lint, cs ) => _.mergeWith(
+					lint, cs,
+					( old, src ) => [].concat( _.toArray( old ), _.toArray( src ) )
+				)
+			)
+			.then( errors => {
+				_.each( errors, ( errors, file ) => {
+					formatter.file( file );
+					errors.forEach( error => formatter( error ) );
+					formatter.total( errors );
+				});
+				formatter.checked( _.keys( errors ) );
 				done();
 			})
 			.catch( err => grunt.fail.warn( err ) );

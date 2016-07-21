@@ -1,6 +1,6 @@
 {
   "name": "grunt-wp-audit",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Set of Grunt tasks for auditing WordPress code.",
   "main": "index.js",
   "scripts": {
@@ -21,11 +21,13 @@
   "homepage": "https://github.com/usatoday-smb/grunt-wp-audit#readme",
   "dependencies": {
     "bluebird": "^3.4.0",
-    "grunt": "^1.0.1",
-    "grunt-phplint": "^0.0.8",
     "jscs": "^3.0.4",
     "jshint": "^2.9.2",
-    "stylelint": "^6.5.1",
-    "stylelint-config-wordpress": "^7.1.1"
+    "lodash": "^4.13.1",
+    "stylelint": "^7.0.3",
+    "stylelint-config-wordpress": "^8.0.0"
+  },
+  "peerDependencies": {
+    "grunt": "^1.0.1"
   }
 }
