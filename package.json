@@ -23,9 +23,9 @@
 		"bluebird": "^3.4.0",
 		"jscs": "^3.0.4",
 		"jshint": "^2.9.2",
+		"lodash": "^4.13.1",
 		"stylelint": "^7.0.3",
-		"stylelint-config-wordpress": "^8.0.0",
-		"phplint": "^1.7.1"
+		"stylelint-config-wordpress": "^8.0.0"
 	},
 	"peerDependencies": {
 		"grunt": "^1.0.1"
