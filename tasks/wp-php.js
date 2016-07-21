@@ -167,7 +167,7 @@ module.exports = grunt => {
 					errors.forEach( error => formatter( error ) );
 					formatter.total( errors );
 				});
-				formatter.checked( _.keys( errors ) );
+				formatter.checked( this.filesSrc );
 				done();
 			})
 			.catch( err => grunt.fail.warn( err ) );
