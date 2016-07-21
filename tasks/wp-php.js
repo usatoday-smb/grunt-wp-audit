@@ -130,15 +130,11 @@ module.exports = grunt => {
 			.map( output => {
 				grunt.verbose.ok( 'Processed PHPCS successfully.' );
 				let files = {};
-				for ( let key in output ) {
-					let val    = output[ key ],
-						errors = val.messages;
-
+				_.each( output, ( val, key ) => {
+					let errors = val.messages;
 					if ( ! errors.length ) {
 						return;
 					}
-
-					let file = path.relative( process.cwd(), key );
 					errors = errors.map( msg => {
 						let message = msg.message;
 
@@ -153,7 +149,7 @@ module.exports = grunt => {
 						};
 					});
 					files[ path.relative( process.cwd(), key ) ] = errors;
-				}
+				});
 				return files;
 			})
 			.then( output => _.merge.apply( _, output ) );

@@ -24,7 +24,7 @@
     "jscs": "^3.0.4",
     "jshint": "^2.9.2",
     "lodash": "^4.13.1",
-    "stylelint": "^7.0.3",
+    "stylelint": "^6.9.0",
     "stylelint-config-wordpress": "^8.0.0"
   },
   "peerDependencies": {
