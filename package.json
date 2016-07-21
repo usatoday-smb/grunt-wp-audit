@@ -23,11 +23,11 @@
 		"bluebird": "^3.4.0",
 		"jscs": "^3.0.4",
 		"jshint": "^2.9.2",
-		"stylelint": "^6.5.1",
-		"stylelint-config-wordpress": "^7.1.1"
+		"stylelint": "^7.0.3",
+		"stylelint-config-wordpress": "^8.0.0",
+		"phplint": "^1.7.1"
 	},
 	"peerDependencies": {
-		"grunt": "^1.0.1",
-		"grunt-phplint": "^0.0.8"
+		"grunt": "^1.0.1"
 	}
 }
