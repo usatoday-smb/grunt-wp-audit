@@ -41,9 +41,8 @@ module.exports = grunt => {
 			let promises = [];
 
 			this.filesSrc.forEach( file => {
-				let promise = readAsync( file, 'utf-8' );
-
-				promise.then( code => {
+				let promise = readAsync( file, 'utf-8' )
+				.then( code => {
 					let errors = checker.checkString( code );
 					let count = errors.getErrorList().length;
 
@@ -82,14 +81,17 @@ module.exports = grunt => {
 					if ( count ) {
 						formatter.total( count );
 					}
+					return count;
 				});
 
 				promises.push( promise );
 			});
 
 			// Exit once everything is done.
-			Promise.all( promises ).then( () => {
+			Promise.reduce( promises, ( total, count ) => total + count, 0 )
+			.then( total => {
 				formatter.checked( this.filesSrc );
+				formatter.errors( total );
 				done();
 			});
 		}

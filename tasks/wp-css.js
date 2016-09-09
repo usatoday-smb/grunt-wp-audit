@@ -32,6 +32,7 @@ module.exports = grunt => {
 					config: require( 'stylelint-config-wordpress' ),
 					configOverrides: options.config
 				}).then( data => {
+					let total = 0;
 					data.results.forEach( result => {
 						if ( result.errored ) {
 							formatter.file( result.source );
@@ -44,13 +45,17 @@ module.exports = grunt => {
 							});
 						}
 						formatter.total( result.warnings );
+						total += result.warnings.length;
 					});
+					return total;
 				});
 				promises.push( promise );
 			});
 
-			Promise.all( promises ).then( () => {
+			Promise.reduce( promises, ( total, count ) => total + count, 0 )
+			.then( total => {
 				formatter.checked( this.filesSrc );
+				formatter.errors( total );
 				done();
 			});
 		}

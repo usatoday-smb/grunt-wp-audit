@@ -168,6 +168,7 @@ module.exports = grunt => {
 					formatter.total( errors );
 				});
 				formatter.checked( this.filesSrc );
+				formatter.errors( _.sizeOf( errors ) );
 				done();
 			})
 			.catch( err => grunt.fail.warn( err ) );
