@@ -16,7 +16,7 @@ if [ -z "$DRY_RUN" -a ! -d $DIR ]; then
 	mkdir $DIR
 fi
 
-PHPCS_URL='https://github.com/squizlabs/PHP_CodeSniffer/releases/download/3.0.0/phpcs.phar'
+PHPCS_URL='https://github.com/squizlabs/PHP_CodeSniffer/releases/download/2.9.0/phpcs.phar'
 echo 'Downloading PHPCS.'
 if [ -z "$DRY_RUN" -a ! -r $DIR/phpcs ]; then
 	curl -L -o $DIR/phpcs $PHPCS_URL
