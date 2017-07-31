@@ -1,6 +1,6 @@
 {
   "name": "grunt-wp-lint",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Set of Grunt tasks for auditing WordPress code.",
   "main": "index.js",
   "scripts": {
